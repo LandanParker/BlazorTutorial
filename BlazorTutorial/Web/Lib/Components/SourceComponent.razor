@@ -1,9 +1,56 @@
-﻿
+﻿@ChildContent
 
 @code {
     
     [Parameter]
     public IReceiver Context { get; set; }
+    
+    protected RenderFragment _ChildContent { get; set; }
+    
+    [Parameter]
+    public virtual RenderFragment ChildContent
+    {
+        get
+        {
+            return 
+                @<div
+                     type=@ElementType
+                     style=@AllStyles
+                     class=@AllClasses
+                 >
+                    _ChildContent
+                </div>;
+        }
+        set
+        {
+            
+            _ChildContent = value;
+        }
+    }
+
+    public Dictionary<string, string> Styles { get; set; } = new();
+    public KeyValuePair<string, string> AddStyle {set => Styles.Add(value.Key, value.Value); }
+    public string AllStyles
+    {
+        get
+        {
+            if (Styles.Count == 0) return null;
+            return string.Join("; ", Styles.Select(style => $"{style.Key}: {style.Value}"));
+        }
+    }
+
+    public HashSet<string> Classes { get; set; } = new();
+    public string AddClass{set => Classes.Add(value);}
+    public string AllClasses
+    {
+        get
+        {
+            if (Classes.Count == 0) return null;
+            return string.Join(" ", Classes);
+        }
+    }
+
+    public string ElementType { get; set; }
 
     public Action StateChanged => StateHasChanged;
     public Action SyncComponent => ()=>InvokeAsync(StateChanged);

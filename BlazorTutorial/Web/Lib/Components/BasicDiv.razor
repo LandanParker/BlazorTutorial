@@ -1,9 +1,32 @@
 ﻿@inherits SourceComponent
 
-@Text
+@ChildContent
 
 @code {
 
     public string Text { get; set; } = "hello world?";
+        
+    [Parameter]
+    public override RenderFragment ChildContent
+    {
+        get
+        {
+            return 
+                @<div
+                     type=@ElementType
+                     style=@AllStyles
+                     class=@AllClasses
+                     onmousedown=@OnMouseDown
+                 >
+                    @Text
+                </div>;
+        }
+        set
+        {
+            
+        }
+    }
+
+    public Action<MouseEventArgs> OnMouseDown = _ => { };
 
 }

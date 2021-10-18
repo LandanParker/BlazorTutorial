@@ -7,13 +7,27 @@
 @code{
 
     RenderFragment hold { get; set; }
-    BasicDivContext _basicDivContext { get; set; }    
+    BasicDivContext _basicDivContext { get; set; }   
+    
     public Index()
     {
-        hold = @<BasicDiv Context=@(_basicDivContext=new())></BasicDiv>;
+        _basicDivContext = new();
+        _basicDivContext.Text = "I modified the inner html";
+
+        _basicDivContext.OnMouseDown += _ =>
+        {
+            
+        };
+        
+        
+        hold = @<BasicDiv Context=@(_basicDivContext)>_basicDivContext.Text</BasicDiv>;
         Task.Delay(1000).ContinueWith(e =>
         {
-            _basicDivContext.SetText("what");
+            _basicDivContext.SourceComponent.AddClass = "newclass";
+            _basicDivContext.SourceComponent.AddClass = "someclass";
+            _basicDivContext.SetText("blah blah");
+            _basicDivContext.SourceComponent.SyncComponent();
+    //_basicDivContext.SetText("what");
         });
     }
 
