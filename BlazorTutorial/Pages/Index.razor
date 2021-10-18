@@ -1,0 +1,20 @@
+﻿@page "/"
+@using BlazorTutorial.Web.Lib.Contexts
+@using BlazorTutorial.Web.Lib.Components
+
+@hold
+
+@code{
+
+    RenderFragment hold { get; set; }
+    BasicDivContext _basicDivContext { get; set; }    
+    public Index()
+    {
+        hold = @<BasicDiv Context=@(_basicDivContext=new())></BasicDiv>;
+        Task.Delay(1000).ContinueWith(e =>
+        {
+            _basicDivContext.SetText("what");
+        });
+    }
+
+}

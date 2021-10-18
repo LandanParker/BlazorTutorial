@@ -1,0 +1,19 @@
+﻿
+
+@code {
+    
+    [Parameter]
+    public IReceiver Context { get; set; }
+
+    public Action StateChanged => StateHasChanged;
+    public Action SyncComponent => ()=>InvokeAsync(StateChanged);
+    
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        base.SetParametersAsync(parameters);
+        Context?.Receive(this);
+        
+        return Task.CompletedTask;
+    }
+
+}
