@@ -1,4 +1,7 @@
 ﻿@inherits SourceComponent
+@implements IMouseCallbacks
+@implements IKeyCallbacks
+
 
 @ChildContent
 
@@ -29,7 +32,9 @@
         }
     }
 
-    public Action<MouseEventArgs> OnMouseDown = _ => { };
-    public Action<KeyboardEventArgs> OnKeyDown = _ => { };
+    public virtual Action<MouseEventArgs> OnMouseDown { get; set; }
+    public virtual Action<MouseEventArgs> OnMouseUp { get; set; }
+    public virtual Action<KeyboardEventArgs> OnKeyUp { get; set; }
+    public virtual Action<KeyboardEventArgs> OnKeyDown { get; set; }
 
 }

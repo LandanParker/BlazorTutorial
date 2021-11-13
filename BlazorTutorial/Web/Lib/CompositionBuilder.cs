@@ -18,11 +18,41 @@ namespace BlazorTutorial.Web.Lib
         public object Item { get; set; }
     }
     
-
     public class CompositionBuilder
     {
 
-        public BuildCascade WithEventComposition<Exten>(params Type[] types)
+        private void DoInterfaceBuild(TypeBuilder tBuilder, Type tp)
+        {
+            tBuilder.AddInterfaceImplementation(tp);
+            foreach (var v in tp.GetProperties())
+            {
+                var field = tBuilder.DefineField("_" + v.Name.ToLower(), v.PropertyType, FieldAttributes.Private);
+                var property = tBuilder.DefineProperty(v.Name, PropertyAttributes.None, v.PropertyType, new Type[0]);
+                var getter = tBuilder.DefineMethod("get_" + v.Name,
+                    MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
+                    v.PropertyType, new Type[0]);
+                var setter = tBuilder.DefineMethod("set_" + v.Name,
+                    MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual, null,
+                    new Type[] {v.PropertyType});
+                var getGenerator = getter.GetILGenerator();
+                var setGenerator = setter.GetILGenerator();
+                getGenerator.Emit(OpCodes.Ldarg_0);
+                getGenerator.Emit(OpCodes.Ldfld, field);
+                getGenerator.Emit(OpCodes.Ret);
+                setGenerator.Emit(OpCodes.Ldarg_0);
+                setGenerator.Emit(OpCodes.Ldarg_1);
+                setGenerator.Emit(OpCodes.Stfld, field);
+                setGenerator.Emit(OpCodes.Ret);
+                property.SetGetMethod(getter);
+                property.SetSetMethod(setter);
+                tBuilder.DefineMethodOverride(getter, v.GetGetMethod());
+                tBuilder.DefineMethodOverride(setter, v.GetSetMethod());
+            }
+        }
+        
+        //public BuildCascade WithEventComposition<Exten>()
+        
+        public BuildCascade WithEventComposition<Exten>(Type initialType, params Type[] types)
         {
             var assemblyName = new Guid().ToString();
             AssemblyName aName = new AssemblyName(assemblyName);
@@ -31,35 +61,11 @@ namespace BlazorTutorial.Web.Lib
             ModuleBuilder mb = ab.DefineDynamicModule("Module");
 
             var type = mb.DefineType(GetType().Name + "_" + typeof(Exten).Name, TypeAttributes.Public, typeof(Exten));
-
+            
+            DoInterfaceBuild(type, initialType);
+            
             foreach (var tp in types)
-            {
-                type.AddInterfaceImplementation(tp);
-                foreach (var v in tp.GetProperties())
-                {
-                    var field = type.DefineField("_" + v.Name.ToLower(), v.PropertyType, FieldAttributes.Private);
-                    var property = type.DefineProperty(v.Name, PropertyAttributes.None, v.PropertyType, new Type[0]);
-                    var getter = type.DefineMethod("get_" + v.Name,
-                        MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
-                        v.PropertyType, new Type[0]);
-                    var setter = type.DefineMethod("set_" + v.Name,
-                        MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual, null,
-                        new Type[] {v.PropertyType});
-                    var getGenerator = getter.GetILGenerator();
-                    var setGenerator = setter.GetILGenerator();
-                    getGenerator.Emit(OpCodes.Ldarg_0);
-                    getGenerator.Emit(OpCodes.Ldfld, field);
-                    getGenerator.Emit(OpCodes.Ret);
-                    setGenerator.Emit(OpCodes.Ldarg_0);
-                    setGenerator.Emit(OpCodes.Ldarg_1);
-                    setGenerator.Emit(OpCodes.Stfld, field);
-                    setGenerator.Emit(OpCodes.Ret);
-                    property.SetGetMethod(getter);
-                    property.SetSetMethod(setter);
-                    type.DefineMethodOverride(getter, v.GetGetMethod());
-                    type.DefineMethodOverride(setter, v.GetSetMethod());
-                }
-            }
+                DoInterfaceBuild(type, tp);
 
             return new BuildCascade
             {
