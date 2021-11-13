@@ -1,34 +1,58 @@
 ﻿@page "/"
 @using BlazorTutorial.Web.Lib.Contexts
 @using BlazorTutorial.Web.Lib.Components
+@using System.Dynamic
+@using System.Reflection
+@using System.Reflection.Emit
+@using System.Threading
+@using BlazorTutorial.Web.Lib
 
 @hold
 
 @code{
 
     RenderFragment hold { get; set; }
-    BasicDivContext _basicDivContext { get; set; }   
+    
     
     public Index()
     {
-        _basicDivContext = new();
-        _basicDivContext.Text = "I modified the inner html";
 
-        _basicDivContext.OnMouseDown += _ =>
+        var builder = new CompositionBuilder();
+        
+        var thingTest = builder.WithEventComposition<EventComposition>(typeof(IReceivable), typeof(IMouseCallbacks), typeof(IKeyCallbacks));
+
+        thingTest.PickInterface(out IMouseCallbacks mouseInstance);
+        thingTest.PickInterface(out IKeyCallbacks keyInstance);
+        
+        thingTest.PickInterface(out IReceivable recv);
+        
+        BasicDiv divInstance = null;
+        
+        recv.Receive = obj =>
         {
-            
+            Console.WriteLine("initialize");
+            divInstance = obj as BasicDiv;
+            divInstance.TabIndex = 0;
+            divInstance.Text = "something";
+            divInstance.OnMouseDown += mouseInstance.OnMouseDown;
+            divInstance.OnKeyDown += keyInstance.OnKeyDown;
+            divInstance.SyncComponent();
         };
         
+        mouseInstance.OnMouseDown += (arg) => { Console.WriteLine("mouse down"); };
+        keyInstance.OnKeyDown += (arg) => { Console.WriteLine("you clicked a key"); };
         
-        hold = @<BasicDiv Context=@(_basicDivContext)>_basicDivContext.Text</BasicDiv>;
+        hold = @<BasicDiv Context=@recv></BasicDiv>;
+        
         Task.Delay(1000).ContinueWith(e =>
         {
-            _basicDivContext.SourceComponent.AddClass = "newclass";
-            _basicDivContext.SourceComponent.AddClass = "someclass";
-            _basicDivContext.SetText("blah blah");
-            _basicDivContext.SourceComponent.SyncComponent();
-    //_basicDivContext.SetText("what");
+            divInstance.AddClass = "newclass";
+            divInstance.AddClass = "someclass";
+            divInstance.Text = "blah blah";
+            divInstance.SyncComponent();
+            divInstance.Text = "what";
         });
+        
     }
 
 }

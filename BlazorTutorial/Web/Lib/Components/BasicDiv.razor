@@ -4,8 +4,8 @@
 
 @code {
 
-    public string Text { get; set; } = "hello world?";
-        
+    public string Text { get; set; }
+    
     [Parameter]
     public override RenderFragment ChildContent
     {
@@ -17,6 +17,8 @@
                      style=@AllStyles
                      class=@AllClasses
                      onmousedown=@OnMouseDown
+                     onkeydown=@OnKeyDown
+                     tabindex=@TabIndex
                  >
                     @Text
                 </div>;
@@ -28,5 +30,6 @@
     }
 
     public Action<MouseEventArgs> OnMouseDown = _ => { };
+    public Action<KeyboardEventArgs> OnKeyDown = _ => { };
 
 }

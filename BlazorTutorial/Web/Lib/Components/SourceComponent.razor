@@ -2,8 +2,10 @@
 
 @code {
     
+    public int? TabIndex { get; set; }
+    
     [Parameter]
-    public IReceiver Context { get; set; }
+    public IReceivable Context { get; set; }
     
     protected RenderFragment _ChildContent { get; set; }
     
