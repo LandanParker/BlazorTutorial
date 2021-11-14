@@ -1,10 +1,6 @@
 ﻿@page "/"
 @using BlazorTutorial.Web.Lib.Contexts
 @using BlazorTutorial.Web.Lib.Components
-@using System.Dynamic
-@using System.Reflection
-@using System.Reflection.Emit
-@using System.Threading
 @using BlazorTutorial.Web.Lib
 
 @hold
@@ -13,47 +9,46 @@
 
     RenderFragment hold { get; set; }
     
-public Index()
-{
-    var builder = new CompositionBuilder();
-    
-    var thingTest = builder.WithEventComposition<EventComposition>(typeof(IReceivable), typeof(BasicDiv).GetInterfaces().Where(e=>!e.IsAssignableFrom(typeof(SourceComponent))).ToArray());
+    public Index()
+    {
+        var builder = new CompositionBuilder();
 
-    thingTest.PickInterface(out IMouseCallbacks mouseInstance);
-    thingTest.PickInterface(out IKeyCallbacks keyInstance);
-    
-    thingTest.PickInterface(out IReceivable recv);
-    
-    mouseInstance.OnMouseDown += (arg) => { Console.WriteLine("mouse down"); };
-    keyInstance.OnKeyDown += (arg) => { Console.WriteLine("you clicked a key"); };
-    
-    BasicDiv divInstance = null;
-    
-    string storeAString = "some stuff";
-    
-    recv.Receive = obj =>
-    {
-        Console.WriteLine("initialize");
-        divInstance = obj as BasicDiv;
-        divInstance.TabIndex = 0;
-        divInstance.Text = storeAString;
-        divInstance.OnMouseDown += mouseInstance.OnMouseDown;
-        divInstance.OnKeyDown += keyInstance.OnKeyDown;
-        divInstance.SyncComponent();
+        var thingTest = builder.WithEventComposition<EventComposition, BasicDiv>();
         
-        storeAString = "other stuff";
-    };
-    
-    hold = @<BasicDiv Context=@recv></BasicDiv>;
-    
-    Task.Delay(1000).ContinueWith(e =>
-    {
-        divInstance.AddClass = "newclass";
-        divInstance.AddClass = "someclass";
-        divInstance.Text = storeAString;
-        divInstance.SyncComponent();
-        divInstance.Text = "what";
-    });
-}
+        thingTest.TryPickInterface(out IMouseCallbacks mouseInstance);
+        thingTest.TryPickInterface(out IKeyCallbacks keyInstance);
+        thingTest.TryPickInterface(out IReceivable recv);
+
+        mouseInstance.OnMouseDown += (arg) => { Console.WriteLine("mouse down"); };
+        keyInstance.OnKeyDown += (arg) => { Console.WriteLine("you clicked a key"); };
+
+        BasicDiv divInstance = null;
+
+        string storeAString = "some stuff";
+        
+        recv.Receive = obj =>
+        {
+            Console.WriteLine("initialize");
+            divInstance = obj as BasicDiv;
+            divInstance.TabIndex = 0;
+            divInstance.Text = storeAString;
+            divInstance.OnMouseDown += mouseInstance.OnMouseDown;
+            divInstance.OnKeyDown += keyInstance.OnKeyDown;
+            divInstance.SyncComponent();
+            
+            storeAString = "other stuff";
+        };
+
+        hold = @<BasicDiv Context=@recv></BasicDiv>;
+            
+            Task.Delay(1000).ContinueWith(e =>
+            {
+                divInstance.AddClass = "newclass";
+                divInstance.AddClass = "someclass";
+                divInstance.Text = storeAString;
+                divInstance.SyncComponent();
+                divInstance.Text = "what";
+            });
+    }
 
 }

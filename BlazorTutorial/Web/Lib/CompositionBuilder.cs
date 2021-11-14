@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Xml.Schema;
+using BlazorTutorial.Web.Lib.Components;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorTutorial.Web.Lib
 {
@@ -9,9 +12,14 @@ namespace BlazorTutorial.Web.Lib
     public class BuildCascade
     {
 
-        public BuildCascade PickInterface<I>(out I iface)
+        public BuildCascade TryPickInterface<I>(out I iface)
         {
             iface = (I) Item;
+            return this;
+        }
+
+        public BuildCascade DoOtherthing()
+        {
             return this;
         }
 
@@ -51,8 +59,15 @@ namespace BlazorTutorial.Web.Lib
         }
         
         //public BuildCascade WithEventComposition<Exten>()
-        
-        public BuildCascade WithEventComposition<Exten>(Type initialType, params Type[] types)
+
+        public BuildCascade WithEventComposition<Exten, EventContainingType>(params Type[] types) => 
+            WithEventComposition<Exten>(
+                typeof(EventContainingType)
+                    .GetInterfaces()
+                    .Where(e=>!e.IsAssignableFrom(typeof(ComponentBase))).ToArray()
+            );
+
+        public BuildCascade WithEventComposition<Exten>(params Type[] types)
         {
             var assemblyName = new Guid().ToString();
             AssemblyName aName = new AssemblyName(assemblyName);
@@ -62,8 +77,6 @@ namespace BlazorTutorial.Web.Lib
 
             var type = mb.DefineType(GetType().Name + "_" + typeof(Exten).Name, TypeAttributes.Public, typeof(Exten));
             
-            DoInterfaceBuild(type, initialType);
-            
             foreach (var tp in types)
                 DoInterfaceBuild(type, tp);
 
@@ -71,7 +84,6 @@ namespace BlazorTutorial.Web.Lib
             {
                 Item = (Exten) Activator.CreateInstance(type.CreateType())
             };
-
         }
     }
 }

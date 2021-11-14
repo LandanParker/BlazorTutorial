@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorTutorial.Web.Lib.Contexts
 {
-    public class EventComposition
+    public class EventComposition : IReceivable
     {
+        public Action<object> Receive { get; set; }
     }
 }
