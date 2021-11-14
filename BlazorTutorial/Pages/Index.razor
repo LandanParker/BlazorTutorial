@@ -13,6 +13,7 @@
     {
         var builder = new CompositionBuilder();
 
+        
         var thingTest = builder.WithEventComposition<EventComposition, BasicDiv>();
         
         thingTest.TryPickInterface(out IMouseCallbacks mouseInstance);
