@@ -55,31 +55,31 @@ namespace BlazorTutorial.Web.Lib.Contexts
             };
         }
 
-public TestIndex()
-{
-    TestFrag = CreateComponent(typeof(TestComp), out var composition, out string tag);
-
-    //create data context for the component being generated
-    //associated it via tag.
-    //Decoupling logic from the component.
-
-    KeyValuePair<string, dynamic> ComponentDataSource = new(tag, new{count = 0});
-    
-    composition.ConformToEventSource(new
-    {
-        OnMouseUp = (Action<object>) (_ =>
+        public TestIndex()
         {
-            ComponentDataSource = new(tag, new {count = ComponentDataSource.Value.count + 1});
-        }),
+            TestFrag = CreateComponent(typeof(TestComp), out var composition, out string tag);
 
-        OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked: "+ComponentDataSource.Value.count); }),
-    });
+            //create data context for the component being generated
+            //associated it via tag.
+            //Decoupling logic from the component.
 
-    composition.Receive = o =>
-    {
-        composition.AssignInterfaceProperties(o);
-        Console.WriteLine("doing");
-    };
-}
+            KeyValuePair<string, dynamic> ComponentDataSource = new(tag, new{count = 0});
+            
+            composition.ConformToEventSource(new
+            {
+                OnMouseUp = (Action<object>) (_ =>
+                {
+                    ComponentDataSource = new(tag, new {count = ComponentDataSource.Value.count + 1});
+                }),
+
+                OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked: "+ComponentDataSource.Value.count); }),
+            });
+
+            composition.Receive = o =>
+            {
+                composition.AssignInterfaceProperties(o);
+                Console.WriteLine("doing");
+            };
+        }
     }
 }

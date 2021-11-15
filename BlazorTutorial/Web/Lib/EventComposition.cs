@@ -4,7 +4,7 @@ using System.Reflection;
 using BlazorTutorial.Web.Lib.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorTutorial.Web.Lib.Contexts
+namespace BlazorTutorial.Web.Lib
 {
     public class EventComposition : IReceivable
     {
