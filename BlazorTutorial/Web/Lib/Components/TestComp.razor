@@ -1,0 +1,20 @@
+﻿@implements IMouseCallbacks
+
+<h3 tabindex onmousedown=@OnMouseDown onmouseup=@OnMouseUp>TestComp</h3>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    
+    [Parameter]
+    public IReceivable Context { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Context?.Receive(this);
+    }
+    
+    public virtual Action<MouseEventArgs> OnMouseDown { get; set; }
+    public virtual Action<MouseEventArgs> OnMouseUp { get; set; }
+}

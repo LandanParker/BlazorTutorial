@@ -1,55 +1,24 @@
 ﻿@page "/"
-@using BlazorTutorial.Web.Lib.Contexts
-@using BlazorTutorial.Web.Lib.Components
+
 @using BlazorTutorial.Web.Lib
+@using BlazorTutorial.Web.Lib.Contexts
+@using BlazorTutorial.Web.Lib.PageView
+
+@inherits PageComponent
 
 @hold
 
 @code{
-
-    RenderFragment hold { get; set; }
     
+    public RenderFragment hold { get; set; }
+
     public Index()
     {
-        var builder = new CompositionBuilder();
-
-        
-        var thingTest = builder.WithEventComposition<EventComposition, BasicDiv>();
-        
-        thingTest.TryPickInterface(out IMouseCallbacks mouseInstance);
-        thingTest.TryPickInterface(out IKeyCallbacks keyInstance);
-        thingTest.TryPickInterface(out IReceivable recv);
-
-        mouseInstance.OnMouseDown += (arg) => { Console.WriteLine("mouse down"); };
-        keyInstance.OnKeyDown += (arg) => { Console.WriteLine("you clicked a key"); };
-
-        BasicDiv divInstance = null;
-
-        string storeAString = "some stuff";
-        
-        recv.Receive = obj =>
-        {
-            Console.WriteLine("initialize");
-            divInstance = obj as BasicDiv;
-            divInstance.TabIndex = 0;
-            divInstance.Text = storeAString;
-            divInstance.OnMouseDown += mouseInstance.OnMouseDown;
-            divInstance.OnKeyDown += keyInstance.OnKeyDown;
-            divInstance.SyncComponent();
-            
-            storeAString = "other stuff";
-        };
-
-        hold = @<BasicDiv Context=@recv></BasicDiv>;
-            
-            Task.Delay(1000).ContinueWith(e =>
-            {
-                divInstance.AddClass = "newclass";
-                divInstance.AddClass = "someclass";
-                divInstance.Text = storeAString;
-                divInstance.SyncComponent();
-                divInstance.Text = "what";
-            });
+        hold = new TestIndex().TestFrag;
     }
-
+    
+    public override void OnInteropSet(BackingInterop bk)
+    {
+        base.OnInteropSet(bk);
+    }
 }

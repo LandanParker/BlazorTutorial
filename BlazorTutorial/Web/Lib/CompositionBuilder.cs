@@ -9,21 +9,21 @@ using Microsoft.AspNetCore.Components;
 namespace BlazorTutorial.Web.Lib
 {
 
-    public class BuildCascade
+    public class BuildCascade<Exten>
     {
 
-        public BuildCascade TryPickInterface<I>(out I iface)
+        public BuildCascade<Exten> TryPickInterface<I>(out I iface) where I : Exten
         {
             iface = (I) Item;
             return this;
         }
 
-        public BuildCascade DoOtherthing()
+        public BuildCascade<Exten> DoOtherthing()
         {
             return this;
         }
 
-        public object Item { get; set; }
+        public Exten Item { get; set; }
     }
     
     public class CompositionBuilder
@@ -60,14 +60,21 @@ namespace BlazorTutorial.Web.Lib
         
         //public BuildCascade WithEventComposition<Exten>()
 
-        public BuildCascade WithEventComposition<Exten, EventContainingType>(params Type[] types) => 
-            WithEventComposition<Exten>(
+        public BuildCascade<Exten> WithEventComposition<Exten, EventContainingType>(params Type[] types) => 
+            WithEventCompositionB<Exten>(
                 typeof(EventContainingType)
                     .GetInterfaces()
                     .Where(e=>!e.IsAssignableFrom(typeof(ComponentBase))).ToArray()
             );
+        
+        public BuildCascade<Exten> WithEventComposition<Exten>(Type eventContainingType, params Type[] types) => 
+            WithEventCompositionB<Exten>(
+                eventContainingType
+                    .GetInterfaces()
+                    .Where(e=>!e.IsAssignableFrom(typeof(ComponentBase))).ToArray()
+            );
 
-        public BuildCascade WithEventComposition<Exten>(params Type[] types)
+        public BuildCascade<Exten> WithEventCompositionB<Exten>(params Type[] types)
         {
             var assemblyName = new Guid().ToString();
             AssemblyName aName = new AssemblyName(assemblyName);
@@ -80,7 +87,7 @@ namespace BlazorTutorial.Web.Lib
             foreach (var tp in types)
                 DoInterfaceBuild(type, tp);
 
-            return new BuildCascade
+            return new BuildCascade<Exten>
             {
                 Item = (Exten) Activator.CreateInstance(type.CreateType())
             };
