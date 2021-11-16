@@ -68,31 +68,31 @@ namespace BlazorTutorial.Web.Lib.Contexts
             }
         }
         
-public TestIndex()
-{
+        public TestIndex()
+        {
 
-    var holdType = new CompositionBuilder().CreateComponentFrom(typeof(TestComp))
-        .AssignInject(typeof(PageViewManager), "testProp").Item as TestComp;
-    
-    TestFrag = CreateComponent(holdType.GetType(), out var composition, out string tag);
+            var holdType = new CompositionBuilder().CreateComponentFrom(typeof(TestComp))
+                .AssignInject(typeof(PageViewManager), "testProp").Item as TestComp;
+            
+            TestFrag = CreateComponent(holdType.GetType(), out var composition, out string tag);
 
-    //Could be PageViewManager instead.
-    Dictionary<string, int> ComponentDataSource = new () {{tag,0}};
-    
-    composition.ConformToEventSource(new
-    {
-        OnMouseUp = (Action<object>) (_ => { ComponentDataSource[tag] += 1; }),
+            //Could be PageViewManager instead.
+            Dictionary<string, int> ComponentDataSource = new () {{tag,0}};
+            
+            composition.ConformToEventSource(new
+            {
+                OnMouseUp = (Action<object>) (_ => { ComponentDataSource[tag] += 1; }),
 
-        OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked"); }),
-    });
+                OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked"); }),
+            });
 
-    //called in the component's OnParametersSetAsync
-    composition.Receive = o =>
-    {
-        composition.AssignInterfaceProperties(o);
-        var propTest = o.GetType().GetProperty("testProp").GetValue(o) as PageViewManager;
-        Console.WriteLine(propTest.PageViewMap.Count);
-    };
-}
+            //called in the component's OnParametersSetAsync
+            composition.Receive = o =>
+            {
+                composition.AssignInterfaceProperties(o);
+                var propTest = o.GetType().GetProperty("testProp").GetValue(o) as PageViewManager;
+                Console.WriteLine(propTest.PageViewMap.Count);
+            };
+        }
     }
 }
