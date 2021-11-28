@@ -57,9 +57,10 @@ namespace BlazorTutorial.Web.Lib.Contexts
             };
 
         }
-
+        
         public class MethodProp
         {
+            
             public Action<object> DoThing { get; set; }
             
             public void MethodObj(object a)
@@ -67,10 +68,10 @@ namespace BlazorTutorial.Web.Lib.Contexts
                 DoThing(a);
             }
         }
-        
+
         public TestIndex()
         {
-
+            
             var holdType = new CompositionBuilder().CreateComponentFrom(typeof(TestComp))
                 .AssignInject(typeof(PageViewManager), "testProp").Item as TestComp;
             
@@ -82,8 +83,8 @@ namespace BlazorTutorial.Web.Lib.Contexts
             composition.ConformToEventSource(new
             {
                 OnMouseUp = (Action<object>) (_ => { ComponentDataSource[tag] += 1; }),
-
                 OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked"); }),
+                TestString = null as string
             });
 
             //called in the component's OnParametersSetAsync
@@ -91,6 +92,7 @@ namespace BlazorTutorial.Web.Lib.Contexts
             {
                 composition.AssignInterfaceProperties(o);
                 var propTest = o.GetType().GetProperty("testProp").GetValue(o) as PageViewManager;
+                Console.WriteLine((o as IKeyCallbacks).TestString);
                 Console.WriteLine(propTest.PageViewMap.Count);
             };
         }

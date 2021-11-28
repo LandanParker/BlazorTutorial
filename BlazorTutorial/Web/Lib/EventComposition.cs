@@ -27,8 +27,14 @@ namespace BlazorTutorial.Web.Lib
 
         public void ConformToEventSource(object source)
         {
-            foreach (var props in source.GetType().GetProperties())
-                this.GetType().GetProperty(props.Name).SetValue(this, props.GetValue(source));
+            
+            foreach (var props in this.GetType().GetProperties())
+            {
+                var obj = props.GetValue(this);
+                var prop = this.GetType().GetProperty(props.Name);
+                
+                if (obj is not null) prop.SetValue(source, obj);
+            }
         }
     }
 }

@@ -15,5 +15,12 @@ namespace BlazorTutorial.Web.Lib.Components
             get => throw new NotImplementedException();
             set { }
         }
+        
+        public string TestString
+        {
+            get => throw new NotImplementedException();
+            set {}
+        }
+        
     }
 }

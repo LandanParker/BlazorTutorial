@@ -69,40 +69,40 @@ namespace BlazorTutorial.Web.Lib
             return new BuildCascade(type);
         }
         
-public static void AssignInject(TypeBuilder tBuilder, Type tp, string propertyName)
-{
-    var field = tBuilder.DefineField("_" + tp.Name.ToLower(), tp, FieldAttributes.Private);
+        public static void AssignInject(TypeBuilder tBuilder, Type tp, string propertyName)
+        {
+            var field = tBuilder.DefineField("_" + tp.Name.ToLower(), tp, FieldAttributes.Private);
 
-    var property = tBuilder.DefineProperty(propertyName, PropertyAttributes.None, tp, new Type[0]);
+            var property = tBuilder.DefineProperty(propertyName, PropertyAttributes.None, tp, new Type[0]);
 
-    ConstructorInfo classCtorInfo = typeof(InjectAttribute).GetConstructors()[0];
-    
-    CustomAttributeBuilder myCABuilder = 
-        new CustomAttributeBuilder(classCtorInfo, new object[] {});
-    
-    property.SetCustomAttribute(myCABuilder);
+            ConstructorInfo classCtorInfo = typeof(InjectAttribute).GetConstructors()[0];
+            
+            CustomAttributeBuilder myCABuilder = 
+                new CustomAttributeBuilder(classCtorInfo, new object[] {});
+            
+            property.SetCustomAttribute(myCABuilder);
 
-    var getter = tBuilder.DefineMethod("get_" + tp.Name,
-        MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
-        tp, new Type[0]);
-    var setter = tBuilder.DefineMethod("set_" + tp.Name,
-        MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual, null,
-        new Type[] {tp});
-    var getGenerator = getter.GetILGenerator();
-    var setGenerator = setter.GetILGenerator();
-    //get Emit
-    getGenerator.Emit(OpCodes.Ldarg_0);
-    getGenerator.Emit(OpCodes.Ldfld, field);
-    getGenerator.Emit(OpCodes.Ret);
-    
-    //set Emit
-    setGenerator.Emit(OpCodes.Ldarg_0);
-    setGenerator.Emit(OpCodes.Ldarg_1);
-    setGenerator.Emit(OpCodes.Stfld, field);
-    setGenerator.Emit(OpCodes.Ret);
-    property.SetGetMethod(getter);
-    property.SetSetMethod(setter);
-}
+            var getter = tBuilder.DefineMethod("get_" + tp.Name,
+                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual,
+                tp, new Type[0]);
+            var setter = tBuilder.DefineMethod("set_" + tp.Name,
+                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.Virtual, null,
+                new Type[] {tp});
+            var getGenerator = getter.GetILGenerator();
+            var setGenerator = setter.GetILGenerator();
+            //get Emit
+            getGenerator.Emit(OpCodes.Ldarg_0);
+            getGenerator.Emit(OpCodes.Ldfld, field);
+            getGenerator.Emit(OpCodes.Ret);
+            
+            //set Emit
+            setGenerator.Emit(OpCodes.Ldarg_0);
+            setGenerator.Emit(OpCodes.Ldarg_1);
+            setGenerator.Emit(OpCodes.Stfld, field);
+            setGenerator.Emit(OpCodes.Ret);
+            property.SetGetMethod(getter);
+            property.SetSetMethod(setter);
+        }
         
         private void DoInterfaceBuild(TypeBuilder tBuilder, Type tp)
         {
@@ -122,6 +122,7 @@ public static void AssignInject(TypeBuilder tBuilder, Type tp, string propertyNa
                 getGenerator.Emit(OpCodes.Ldarg_0);
                 getGenerator.Emit(OpCodes.Ldfld, field);
                 getGenerator.Emit(OpCodes.Ret);
+                
                 setGenerator.Emit(OpCodes.Ldarg_0);
                 setGenerator.Emit(OpCodes.Ldarg_1);
                 setGenerator.Emit(OpCodes.Stfld, field);
