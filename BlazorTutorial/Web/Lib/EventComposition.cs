@@ -22,18 +22,18 @@ namespace BlazorTutorial.Web.Lib
             
             foreach (var face in theseInterfaces.Where(matchInterfaces.Contains))
                 foreach (var props in face.GetProperties())
+                {
                     props.SetValue(matcher, props.GetValue(this));
+                }
         }
 
         public void ConformToEventSource(object source)
         {
-            
-            foreach (var props in this.GetType().GetProperties())
+            foreach (var props in source.GetType().GetProperties())
             {
-                var obj = props.GetValue(this);
+                var obj = props.GetValue(source);
                 var prop = this.GetType().GetProperty(props.Name);
-                
-                if (obj is not null) prop.SetValue(source, obj);
+                if (obj is not null) prop.SetValue(this, obj);
             }
         }
     }

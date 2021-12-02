@@ -1,9 +1,10 @@
 ﻿@implements IMouseCallbacks
 @implements IKeyCallbacks
 
-<h3 tabindex onmousedown=@OnMouseDown onmouseup=@OnMouseUp>TestComp</h3>
+<div tabindex onmousedown=@OnMouseDown onmouseup=@OnMouseUp>TestComp</div>
 
 @code {
+    
     [Parameter]
     public string Id { get; set; }
     
@@ -15,7 +16,6 @@
         base.OnParametersSet();
         Context?.Receive(this);
     }
-
 
     public virtual string TestString { get; set; }
     

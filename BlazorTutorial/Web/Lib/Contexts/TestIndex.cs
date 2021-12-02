@@ -58,17 +58,6 @@ namespace BlazorTutorial.Web.Lib.Contexts
 
         }
         
-        public class MethodProp
-        {
-            
-            public Action<object> DoThing { get; set; }
-            
-            public void MethodObj(object a)
-            {
-                DoThing(a);
-            }
-        }
-
         public TestIndex()
         {
             
@@ -82,9 +71,9 @@ namespace BlazorTutorial.Web.Lib.Contexts
             
             composition.ConformToEventSource(new
             {
-                OnMouseUp = (Action<object>) (_ => { ComponentDataSource[tag] += 1; }),
-                OnMouseDown = (Action<object>) (_ => { Console.WriteLine("mouse clicked"); }),
-                TestString = null as string
+                OnMouseUp = (Action<MouseEventArgs>) (_ => { ComponentDataSource[tag] += 1; }),
+                OnMouseDown = (Action<MouseEventArgs>) (_ => { Console.WriteLine("mouse clicked"); }),
+                TestString = "what"
             });
 
             //called in the component's OnParametersSetAsync
